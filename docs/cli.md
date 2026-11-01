@@ -1,16 +1,18 @@
 # 🤖 MarkPrompt CLI
 
-> 以下命令从仓库根目录执行。 / Run these commands from the repository root.
+🌐 **English** | [简体中文](cli.zh-CN.md)
 
-版本：`2026.11.01-publish1` · JSON 协议版本：`1`
+> Run these commands from the repository root.
 
-独立运行，不创建窗口、不加载 Tk／Pillow／tkinterdnd2。与 GUI 共用命令目录、命令动作、文档会话、搜索、状态及存储。
+Version: `2026.11.01-i18n1` · JSON protocol version: `1`
 
-> 📌 本文的 exec／run／shell 属于独立会话。读取和控制运行中的窗口请使用 `gui` 入口，见 [运行中窗口控制](window-control.md)。
+Run independently without creating a window or loading Tk, Pillow, or tkinterdnd2. The CLI and GUI share the command catalog, actions, document sessions, search, state, and storage.
 
-## 🚀 快速验收
+> 📌 `exec`, `run`, and `shell` create independent sessions. To read or control a running window, use `gui`; see [Window control](window-control.md).
 
-在项目根目录运行：
+## 🚀 Quick check
+
+Run from the project root:
 
 ```powershell
 py -B -m markprompt_cli --help
@@ -19,75 +21,80 @@ py -B -m markprompt_cli exec --workspace "examples" --file "hello.md" -c "/searc
 py -B -m markprompt_cli run --workspace "examples" --script "examples/workflow.json" --json
 ```
 
-上述查询与只读工作流不修改示例文件。
-也可以执行 `py markprompt_cli.py ...`；从其他目录调用时使用入口文件的完整路径。
+These queries and the read-only workflow leave the example files unchanged. You can also use `py markprompt_cli.py ...`; use the entry file's full path when calling it from another directory.
 
-## 🧩 三种执行方式
+## 🧩 Ways to run
 
-| 入口 | 用途 |
+| Entry | Purpose |
 | --- | --- |
-| `exec -c "命令" [-c "命令"]` | 在一个进程／会话中执行多条命令 |
-| `run --script 文件` | 执行 UTF-8 文本或 JSON 工作流；`-` 表示标准输入 |
-| `shell` | 保持会话，逐行输入并响应，直到 EOF 或 `/quit` |
-| `commands --json` | 查询主命令、别名、参数及 `cli_supported` 能力标记 |
+| `exec -c "command" [-c "command"]` | Execute several commands in one process and session |
+| `run --script file` | Execute a UTF-8 text or JSON workflow; `-` reads standard input |
+| `shell` | Keep a session open, reading and responding line by line until EOF or `/quit` |
+| `commands --json` | Query primary commands, aliases, arguments, and `cli_supported` capability flags |
 
-不同进程不共享当前文件、搜索状态或草稿。连续工作应放在同一次 exec、run 或 shell 中。
+Separate processes do not share the current file, search state, or drafts. Keep related steps in one `exec`, `run`, or `shell` session.
 
-### 共同参数
+### Common options
 
-| 参数 | 含义 |
+| Option | Meaning |
 | --- | --- |
-| `--workspace 路径` | 显式选择工作区；不自动把程序目录当工作区 |
-| `--file 路径` | 执行前打开文件；相对路径以指定工作区为基准，未指定则以进程当前目录为准 |
-| `--json` | exec／run 输出一个 JSON 报告；shell 输出 JSON Lines |
-| `--include-text` | 每个状态快照都包含正文；大文档建议只在需要时使用 |
-| `--allow-dirty` | 允许仅在内存中修改的验收；退出仍返回草稿内容 |
-| `--config 路径` | 显式指定设置文件；默认偏好仅在当前 CLI 进程中保存，不改 GUI 配置 |
+| `--workspace path` | Select a workspace explicitly; the program directory does not become the workspace automatically |
+| `--file path` | Open a file before executing commands; resolve a relative path against the selected workspace, or the process working directory if none is selected |
+| `--json` | Output one JSON report for `exec` / `run`, or JSON Lines for `shell` |
+| `--include-text` | Include document text in every state snapshot; use as needed for large files |
+| `--allow-dirty` | Allow a check that edits only in memory; the final report still returns the draft |
+| `--config path` | Load and save preferences, including language, in this settings file; without it, CLI preferences last only for the current process and do not change GUI settings |
 
-参数放在入口后，例如 `exec --workspace ... --json`。只有运行级 `--version` 放在入口前。
-`--workspace` 不会自动恢复 GUI 的工作区、搜索历史或恢复快照。CLI 也不自动写入 GUI 的恢复槽。
+Place options after the entry, for example `exec --workspace ... --json`. The top-level `--version` option goes before the entry. `--workspace` does not restore GUI workspace state, search history, or recovery snapshots. The CLI does not write to the GUI recovery slots automatically.
 
-## 📝 编辑与保存
+### 🌐 Choose and remember a language
+
+Unconfigured sessions use English. `/lang` lists the discovered languages; this release includes `en` (English) and `zh` (Simplified Chinese). `/lang code` switches language. With an explicit configuration, the next CLI session restores that preference:
+
+```powershell
+py -B -m markprompt_cli exec --config settings.json -c "/lang zh" --json
+py -B -m markprompt_cli exec --config settings.json -c "/help"
+```
+
+The GUI also saves its language preference in its settings file. Missing translations and an unavailable saved language fall back to English. Switching language preserves the current draft, search scope, navigation, and pending confirmation. Command names and keywords stay in English; machine JSON field names, status values, and error codes stay stable. Human descriptions and messages use the selected language. See [Localization](localization.md) to contribute a language.
+
+## 📝 Edit and save
 
 ```powershell
 py -B -m markprompt_cli exec --workspace "C:\Notes" --file "demo.md" -c "/search -i keyword" -c "/line 12 replacement" -c "/save" --json
 ```
 
-此示例会修改指定文件：搜索态下只替换第 12 行的命中，保存后仍保留 SEARCH。
-普通追加需 `/save` 才写盘。退出仍有草稿时，默认退出码为 `4`，并返回正文；不会把未保存操作当作成功。
+This example changes the selected file. In search mode, it replaces only the hits on line 12; saving preserves SEARCH. Appends also require `/save` to reach disk. If a draft remains on exit, the default exit code is `4` and the report includes its text; an unsaved edit is not reported as a completed save.
 
 ```json
 [
   "/open demo.md",
   "/append",
-  "第一行\n第二行",
+  "First line\nSecond line",
   "/end",
   "/save"
 ]
 ```
 
-JSON 工作流必须是字符串数组，适合多行正文。文本工作流一行一条输入，空行和 `#` 开头的注释行跳过；需要追加这类正文时使用 JSON。
-`run --script-format json` 或 `lines` 可指定格式；默认自动识别。脚本文件路径相对于进程当前目录，不是工作区目录。
-默认遇到错误停止；`run --continue-on-error` 可继续，但最终仍返回失败。
+A JSON workflow must be an array of strings and can contain multiline text. Text workflows read one input per line and skip blank lines and comments starting with `#`; use JSON to append such content. Set `run --script-format json` or `lines` to choose a format explicitly; the default detects it. Script paths are relative to the process working directory, not the workspace. Execution stops at the first error by default. `run --continue-on-error` continues but still reports a failing final result.
 
-## ✅ 确认不会弹窗
+## ✅ Confirmations stay in the terminal
 
-| 场景 | 响应与回答 |
+| Situation | Response and answer |
 | --- | --- |
-| 覆盖已有文件 | `status: needs_confirmation`，下一条输入 `y` 或 `n` |
-| 离开未保存文档／退出 | 下一条输入 `save`、`discard` 或 `cancel` |
+| Overwrite an existing file | `status: needs_confirmation`; submit `y` or `n` as the next input |
+| Leave an unsaved document or quit | Submit `save`, `discard`, or `cancel` as the next input |
 
-例如 `-c "/new existing" -c "y"` 明确确认覆盖。
-未提供回答时直接返回退出码 `3`，不会阻塞等待窗口。确认请求本身可以被接受，但动作仍未完成；AI 应检查 `status` 和 `state.pending`，不能只看单条结果的 `ok`。
+For example, `-c "/new existing" -c "y"` explicitly confirms an overwrite. Without an answer, the CLI returns exit code `3` instead of waiting for a dialog. A confirmation request may be accepted while its action remains incomplete. AI clients must check `status` and `state.pending`, in addition to an individual result's `ok` field.
 
-## 📦 JSON 与退出码
+## 📦 JSON and exit codes
 
-exec／run 报告主要字段：
+The main fields in an `exec` / `run` report are:
 
 ```json
 {
   "schema_version": 1,
-  "version": "2026.11.01-publish1",
+  "version": "2026.11.01-i18n1",
   "ok": true,
   "code": "ok",
   "exit_code": 0,
@@ -97,50 +104,57 @@ exec／run 报告主要字段：
 }
 ```
 
-- `results`：每条输入的状态、错误代码、数据、提示及执行后的状态。
-- `state.document`：当前文件、保存指纹、脏行；`/source` 在 `data.text` 返回原文。
-- `state.business`：父状态到子状态的顺序；确认提示独立放在 `state.pending`。
-- `state.search`：搜索词、大小写规则、全文／行范围；`data.hits` 返回行号、起止位置和原行文本。
-- 命中行号从 `1` 开始；`start` 从 `0` 开始，`end` 不包含结束位置，均按 Unicode 字符计。
-- FIND 数据在 `data.results`，`matching_lines` 表示命中行数；不是字符串出现次数。
-- 文件列表在 `data.files`；大纲在 `data.headings`；任务在 `data.tasks`；标签统计在 `data.tags`。
+- `results`: each input's status, error code, data, messages, and resulting state.
+- `state.document`: current file, saved fingerprint, and dirty lines; `/source` returns source text in `data.text`.
+- `state.business`: modes ordered from parent to child; pending confirmations live separately in `state.pending`.
+- `state.search`: keyword, case rule, and whole-document or line scope; `data.hits` contains line numbers, start and end positions, and original line text.
+- Hit line numbers start at `1`; `start` starts at `0` and `end` is exclusive. Coordinates count Unicode characters.
+- FIND returns `data.results`; `matching_lines` counts matching lines, rather than string occurrences.
+- File lists use `data.files`, outlines use `data.headings`, tasks use `data.tasks`, and tag counts use `data.tags`.
 
-| 退出码 | 含义 |
+| Exit code | Meaning |
 | --- | --- |
-| `0` | 成功，且不存在未处理确认或未允许的草稿 |
-| `1` | 命令／I/O 失败，或该命令仅适用于 GUI |
-| `2` | 参数或工作流格式错误 |
-| `3` | 需要确认／确认回答无效 |
-| `4` | 尚有未保存修改 |
-| `5` | 磁盘保存冲突 |
-| `70` | 内部执行错误 |
-| `130` | 用户中断 |
+| `0` | Success, with no pending confirmation or unallowed draft |
+| `1` | Command / I/O failure, or a GUI-only command |
+| `2` | Invalid arguments or workflow format |
+| `3` | Confirmation required or invalid confirmation answer |
+| `4` | Unsaved changes remain |
+| `5` | Disk save conflict |
+| `70` | Internal execution error |
+| `130` | User interruption |
 
-JSON 错误保持可解析，不向 stdout 混入日志。正常中断和已捕获的执行错误也返回当前草稿；不承诺进程被系统强杀时还能输出。
-shell 的每条响应为 `event: command`，最后为 `event: session_end`；读取输出时按行解析。其最终错误码以最后一条结果及当前草稿／确认状态为准。
+Errors remain parseable JSON; logs do not mix into stdout. Normal interruptions and caught execution errors also return the current draft. A process killed by the operating system may be unable to produce output. Each shell response has `event: command`, followed at the end by `event: session_end`; parse the output line by line. The final shell exit code reflects the last result and current draft / confirmation state.
 
-## 🧱 命令展示请求
+## 🧱 Display requests and effects
 
-单条结果增加 `effects` 和 `effects_omitted`：记录提示、错误、显示／导航／定位／刷新请求，最多 200 项。
-例如 `document_view_requested` 表示请求显示某文件，不能只凭此断言已经打开；仍需检查 `ok`、错误代码和 `state`。
-这些是协议版本 1 的新增字段，既有字段保留。异步 GUI 完成状态以最终结果／快照为准。
+Individual results include `effects` and `effects_omitted`. They record messages, errors, and display / navigation / positioning / refresh requests, up to 200 entries. For example, `document_view_requested` requests a file view; it does not prove that the file opened. Check `ok`, the error code, and `state`. These fields extend protocol version 1 while retaining existing fields. For asynchronous GUI work, use the final result or snapshot to confirm completion.
 
-## 📸 AI 语义快照
+## 📸 AI semantic snapshots
 
 ```powershell
 py -B -m markprompt_cli exec --workspace "examples" --file "hello.md" -c "/snapshot" --json
 py -B -m markprompt_cli run --workspace "examples" --script "examples/workflow.json" --json
 ```
 
-`results[].data.snapshot` 返回当前会话的结构化现场；`/snapshot state.json` 可导出文件，实际路径在 `data.snapshot_path`。
-默认正文最多 65,536 个字符，`--full` 可包含完整正文。视口、选区、状态、搜索和目录都单独标记，截取有显式信息。
-不重读磁盘代替内存、不修改草稿或确认；已有草稿／确认仍会影响最终退出码。
-独立 CLI 的快照属于自己的会话；`gui snapshot` 可直接读取真实窗口的选区与视口。详见 [AI数据快照](snapshots.md)。
+`results[].data.snapshot` contains the current session's structured state. `/snapshot state.json` exports a file and returns its actual path in `data.snapshot_path`. Text is limited to 65,536 characters by default; `--full` includes all document text. Viewport, selection, modes, search, and directory data have separate fields and explicit truncation information.
 
-## 🖥️ CLI 与 GUI 的边界
+Snapshots read memory, preserve drafts and pending confirmations, and do not reread disk as a substitute. An existing draft or confirmation still affects the final exit code. An independent CLI snapshot describes its own session. `gui snapshot` reads a real window's selection and viewport directly. See [AI snapshots](snapshots.md).
 
-独立模式有 **45 个可用主命令**，完整清单以 `commands --json` 为准。
-预览、视图切换、主题、动画、清屏、外部程序打开和文件管理器展示标记为 GUI 专属，返回 `gui_required`，不会伪造界面操作成功。
-CLI 可以验证文件、正文、搜索、编辑、保存、导航和业务状态；真实拖拽、字体、排版和图片像素仍由 GUI 验收。
+## 🖥️ CLI and GUI capabilities
 
-GUI 的 Python 启动方式保持不变，重启后自动提供本机连接。`gui exec` 在窗口中执行包括界面功能在内的命令；显式确认、等待、请求结果和前置条件见 [运行中窗口控制](window-control.md)。独立 exec 的 GUI 专属限制仍保留。
+Independent mode supports **45 primary commands**; use `commands --json` for the current list. Preview, view switching, themes, animation, clearing the display, opening external apps, and revealing folders are GUI-only. They return `gui_required` instead of reporting an invented UI action.
+
+The CLI can verify files, text, search, editing, saving, navigation, and business state. Actual drops, fonts, layout, and image pixels require GUI verification.
+
+Start the GUI with Python as usual; each newly started window provides a local connection. `gui exec` runs commands in that window, including UI commands. For explicit confirmations, waiting, request results, and preconditions, see [Window control](window-control.md). GUI-only restrictions still apply to independent `exec` sessions.
+
+## 🌐 CLI language
+
+Place the global `--language CODE` option before the mode:
+
+```powershell
+py -B -m markprompt_cli --language zh commands
+py -B -m markprompt_cli --language zh exec --config settings.json -c "/status"
+```
+
+Without this option, `exec`, `run`, and `shell` restore the language from an explicit `--config`; otherwise they start in English. An explicit language override is saved when `--config` is supplied. During a session, `/lang code` changes the language. `--json` keeps its protocol field names and error codes in either language.

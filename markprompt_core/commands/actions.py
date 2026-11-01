@@ -3,7 +3,8 @@ import re
 from pathlib import Path
 from markprompt_core.application.navigation import SearchReturn
 from markprompt_core.storage.platform import system_open
-from markprompt_core.ui.resources import TEXT, THEMES
+from markprompt_core.ui.resources import THEMES
+from markprompt_core.localization import LANGUAGES
 from markprompt_core.commands.catalog import REGISTRY
 from markprompt_core.storage.local import StorageError
 
@@ -192,13 +193,13 @@ class CommandActions:
 
     def _command_pwd(self, _argument):
         none = self._t("none")
-        self.presentation.console(self._t("current_directory"), [str(self.current_dir or none), "workspace: " + str(self.workspace or none)])
+        self.presentation.console(self._t("current_directory"), [str(self.current_dir or none), self._t("status_workspace") + ": " + str(self.workspace or none)])
 
     def _command_status(self, _argument):
         none = self._t("none")
-        self.presentation.console("STATUS", [
-            "workspace: " + str(self.workspace or none), "directory: " + str(self.current_dir or none),
-            "note: " + str(self.current_file or none), "language: " + self.language,
+        self.presentation.console(self._t("status_title"), [
+            self._t("status_workspace") + ": " + str(self.workspace or none), self._t("status_directory") + str(self.current_dir or none),
+            self._t("status_note") + ": " + str(self.current_file or none), self._t("status_language") + ": " + self.language,
         ])
 
     def _command_ls(self, argument):
@@ -862,7 +863,7 @@ class CommandActions:
             dirty = {n + shift for n in self.dirty_lines}
             self.buffer.mutate(new_text, dirty)
             self._refresh_document()
-            self.presentation.notice("[OK] tags: " + ", ".join(tags) + " · " + self._t("unsaved_pending"), "success")
+            self.presentation.notice("[OK] " + self._t("tags") + ": " + ", ".join(tags) + " · " + self._t("unsaved_pending"), "success")
         else:
             content = self._read_file(self.current_file)
             if content is not None:
@@ -1031,13 +1032,26 @@ class CommandActions:
         # Use the same unsaved-changes check as the window close button.
         self.presentation.close()
 
+    def _set_language(self, argument):
+        if argument not in LANGUAGES.codes():
+            return False
+        config = self._load_config()
+        config['language'] = argument
+        if not self._save_config(config):
+            self.presentation.error('language_save_failed', self._t('language_save_failed'))
+            return False
+        self.language = argument
+        return True
+
     def _command_lang(self, argument):
-        if argument in TEXT:
-            self.language = argument
+        if argument:
+            if not self._set_language(argument):
+                return
             self.presentation.apply_theme(self.presentation.theme)
             self.presentation.prompt()
         else:
-            self.presentation.console('LANGUAGE', ['en', 'zh'])
+            self.presentation.console(self._t('language'),
+                                      [item.code + ' · ' + item.name for item in LANGUAGES.languages()])
 
     def _command_theme(self, argument):
         argument = argument.strip().lower()
@@ -1102,7 +1116,7 @@ class CommandActions:
                         lines.append("  " + prefix + grandchild.name)
         except StorageError as error:
             lines.append("[ERR] " + str(error))
-        self.presentation.console("TREE  " + str(self.current_dir), lines or [self._t("empty_folder")])
+        self.presentation.console(self._t("tree") + "  " + str(self.current_dir), lines or [self._t("empty_folder")])
 
     def _show_help(self):
         rows = ['/%s %s  ·  %s' % (spec.name, spec.usage, spec.description(self.language))

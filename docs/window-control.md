@@ -1,16 +1,16 @@
-# 🪟 运行中窗口连接与控制
+# 🪟 Connect to and control a running window
 
-> 以下命令从仓库根目录执行。 / Run these commands from the repository root.
+🌐 **English** | [简体中文](window-control.zh-CN.md)
 
-版本：`2026.11.01-publish1` · 本机通信协议：`1`
+> Run these commands from the repository root.
 
-CLI 可以读取和操作运行中的 MarkPrompt 窗口，包括尚未保存的正文。先启动仓库根目录的 `markprompt.py`，再运行下方命令。
+Version: `2026.11.01-i18n1` · Local communication protocol: `1`
 
-示例中的 `WINDOW_ID`、`CONFIRMATION_ID` 和 `TEXT_SHA256` 需要替换为实际值。
+The CLI can read and operate a running MarkPrompt window, including its unsaved text. Start `markprompt.py` from the repository root, then run the commands below. Replace `WINDOW_ID`, `CONFIRMATION_ID`, and `TEXT_SHA256` with actual values.
 
-## 🚀 连接
+## 🚀 Connect
 
-在项目目录执行：
+Run from the project directory:
 
 ```powershell
 py -B -m markprompt_cli gui windows --json
@@ -18,36 +18,30 @@ py -B -m markprompt_cli gui snapshot --json
 py -B -m markprompt_cli gui snapshot --window WINDOW_ID --full --json
 ```
 
-只有一个可连接窗口时可以省略 `--window`；有多个时必须明确选择，不按最近窗口猜测。
-`windows` 返回 ID、进程号、版本及源码路径，可分辨测试副本和正式项目。
-`snapshot` 直接返回窗口内存现场，不重新打开文件、不生成导出文件，也不替用户回答确认。
-正文截取规则沿用 [AI数据快照](snapshots.md)；`--full` 包含完整原文。
+With one available window, `--window` is optional. With several, select one explicitly. `windows` returns IDs, process IDs, versions, and source paths so you can distinguish test copies from the main app. `snapshot` reads the window's current memory without reopening files, exporting a file, or answering confirmations. Text truncation follows [AI snapshots](snapshots.md); `--full` includes all source text.
 
-## ⌨️ 执行命令
+## ⌨️ Execute commands
 
 ```powershell
 py -B -m markprompt_cli gui exec --window WINDOW_ID -c "/search keyword" --json
 py -B -m markprompt_cli gui exec --window WINDOW_ID -c "/line 12 replacement" -c "/save" --json
 ```
 
-执行同一套已注册命令和状态规则，可以使用主题、视图等 GUI 命令。
-没有系统 Shell、任意 Python、反序列化执行或任意控件操作入口。
-远程执行保留用户正在输入的命令草稿；编辑／导航仍按正常功能刷新正文和视图。
+This uses the same registered commands and state rules, including GUI commands for themes and views. The connection exposes no system shell, arbitrary Python execution, deserialization execution, or unrestricted widget operations. Remote commands preserve the command draft the user is currently typing; edits and navigation refresh the document and view through the normal app behavior.
 
-`exec` 返回每次操作的 `results`、`effects` 和完成后的 `snapshot`，以及 `request_id`、`window_id`。
-`snapshot.source.kind` 为 `gui`；`connection.gui_control` 为 true。
-事件中的显示请求不是成功证明，仍要检查 `ok`、错误码与最终状态。
+`exec` returns each operation's `results`, `effects`, and completed `snapshot`, plus `request_id` and `window_id`. `snapshot.source.kind` is `gui`, and `connection.gui_control` is true. Display requests in the effects are not proof of success; check `ok`, error codes, and final state.
 
-GUI 中的草稿会留在窗口里，CLI 进程退出不会丢弃它，也不会自动保存。
-因此 GUI `exec /append` 可以退出成功并报告 dirty；独立无窗口 CLI 的未保存退出规则保持原样。
+GUI drafts stay in the window when the CLI process exits and are not saved automatically. A GUI `exec /append` may therefore exit successfully while reporting dirty state. The independent headless CLI retains its normal unsaved-exit rules.
 
-## ✅ 明确回答确认
+`/lang zh` and `/lang en` change the window's language and save its preference. Switching language preserves the document, search, navigation, command draft, and pending confirmation. JSON field names, machine status values, confirmation choices, and error codes remain stable. See [Localization](localization.md).
 
-离开未保存文档或覆盖文件时，返回退出码 `3`，并在 `snapshot.interaction.pending` 中提供：
+## ✅ Answer confirmations explicitly
+
+Leaving an unsaved document or overwriting a file returns exit code `3`, with a pending confirmation in `snapshot.interaction.pending`:
 
 ```json
 {
-  "id": "本次确认编号",
+  "id": "CURRENT_CONFIRMATION_ID",
   "kind": "unsaved_navigation",
   "choices": ["save", "discard", "cancel"]
 }
@@ -57,71 +51,63 @@ GUI 中的草稿会留在窗口里，CLI 进程退出不会丢弃它，也不会
 py -B -m markprompt_cli gui respond --window WINDOW_ID --confirmation CONFIRMATION_ID cancel --json
 ```
 
-- 未保存导航／退出：`save`、`discard`、`cancel`。
-- 覆盖确认：`y`、`n`。
-- 编号过期返回 `stale_confirmation`；不会误答后来出现的另一个确认。
-- 等待确认时普通命令被阻止，只读快照仍可获取。
-- `save` 遇到磁盘冲突返回 `disk_changed`，保留当前文档和草稿，不继续导航。
+- Unsaved navigation / quit: `save`, `discard`, `cancel`.
+- Overwrite: `y`, `n`.
+- An expired ID returns `stale_confirmation` and cannot answer a newer confirmation.
+- While confirmation is pending, normal commands are blocked; read-only snapshots remain available.
+- If `save` encounters a disk conflict, it returns `disk_changed`, preserves the current document and draft, and stops navigation.
 
-GUI 本来的键盘／鼠标回答方式保持不变。
+The GUI's keyboard and mouse answers remain available.
 
-## ⏳ 后台任务与超时
+## ⏳ Background work and timeouts
 
-`exec` 默认等待后台搜索及文档渲染完成，再继续下一条 `-c`。
-`--no-wait` 可立即返回；随后使用：
+By default, `exec` waits for background search and document rendering before continuing to the next `-c`. Use `--no-wait` to return immediately, then wait with:
 
 ```powershell
 py -B -m markprompt_cli gui wait --window WINDOW_ID --timeout 20 --json
 ```
 
-默认超时 10 秒，可设置 0.1–60 秒。等待期间遇到确认会立即返回；不会自动选择保存或放弃。
-搜索任务状态、错误与代数在 `snapshot.find.job` 中。期间换了另一个任务会返回 `state_changed`，AI 应重新观察。
+The default timeout is 10 seconds; accepted values are 0.1–60 seconds. A pending confirmation returns immediately without choosing save or discard. Search job status, errors, and generation appear in `snapshot.find.job`. If another job replaces it while waiting, the result is `state_changed`; AI clients should observe again.
 
-请求在 GUI 队列中超时且尚未开始时会取消，标记 `executed: false`，不会稍后偷偷执行。
-已经开始的请求可能继续完成；连接中断或 `request_pending` 都不能直接推断操作失败。
+A request that times out in the GUI queue before starting is canceled with `executed: false`, preventing later execution. Requests that have started may still finish. A disconnected connection or `request_pending` alone does not establish that an operation failed.
 
-## 🔎 查询结果，避免重复写入
+## 🔎 Query results before repeating a write
 
 ```powershell
 py -B -m markprompt_cli gui exec --window WINDOW_ID --request-id action-001 -c "/append text" --json
 py -B -m markprompt_cli gui result --window WINDOW_ID action-001 --json
 ```
 
-缓存保留期间，同一请求编号与同一参数不会重复执行；同编号换参数会拒绝。
-缓存只保留最近 128 个请求及有界结果正文，不是永久操作日志。结果可能已被淘汰或窗口已关闭。
-`request_not_found`／`result_unavailable` 表示无法从缓存确认，**不要自动重发写操作**；先读取当前快照和文件状态。
-缓存结果的快照属于当时完成时刻，获取最新现场请重新 `snapshot`。
+While a result remains cached, the same request ID with the same arguments is not executed twice. Reusing the ID with different arguments is rejected. The cache holds the most recent 128 requests with bounded result text; it is not a permanent operation log. A result may be evicted or its window may close.
 
-## 📍 防止基于旧正文修改
+`request_not_found` / `result_unavailable` means that the cache cannot confirm the result. **Do not automatically repeat a write**; read the current snapshot and file state first. A cached snapshot reflects the moment that request completed; call `snapshot` again for the current state.
 
-AI 可以用刚取得的 `document.text_sha256` 和绝对文件路径作为单条命令前置条件：
+## 📍 Guard edits against stale text
+
+Use the current `document.text_sha256` and absolute file path as preconditions for a single command:
 
 ```powershell
 py -B -m markprompt_cli gui exec --window WINDOW_ID --expect-file "C:\Notes\note.md" --expect-sha256 TEXT_SHA256 -c "/line 12 replacement" --json
 ```
 
-窗口切换文件或内存内容已变化时返回 `stale_snapshot`，不执行修改。
-这些参数和手工 `--request-id` 仅用于单条 `-c`。保存时仍由存储服务执行独立的磁盘版本冲突检查。
+If the window has switched files or its in-memory text has changed, the request returns `stale_snapshot` without executing the edit. Preconditions and manually supplied `--request-id` values require exactly one `-c`. The storage service still performs an independent disk-version conflict check on save.
 
-## 📦 退出码
+## 📦 Exit codes
 
-| 退出码 | 含义 |
+| Exit code | Meaning |
 | --- | --- |
-| `0` | 本次读取／操作成功；窗口草稿仍可能未保存 |
-| `1` | 命令、业务、旧快照／旧确认或搜索失败 |
-| `2` | 参数错误 |
-| `3` | 需要明确回答确认 |
-| `5` | 保存冲突 |
-| `6` | 无法连接、没有可用窗口或多窗口未明确选择 |
-| `7` | 请求／等待超时，或暂时无法确认操作结果 |
+| `0` | This read / operation succeeded; the window may still contain unsaved changes |
+| `1` | Command, business state, stale snapshot / confirmation, or search failure |
+| `2` | Invalid arguments |
+| `3` | An explicit confirmation answer is required |
+| `5` | Save conflict |
+| `6` | Connection unavailable, no windows, or multiple windows without a selection |
+| `7` | Request / wait timeout, or an outcome that cannot yet be confirmed |
 
-## 🔌 运行方式与边界
+## 🔌 Runtime and boundaries
 
-每个正常启动的窗口自动监听随机的 `127.0.0.1` 端口，并生成独立随机凭据。
-Windows 描述文件位于 `%LOCALAPPDATA%\MarkPrompt\runtime\WINDOW_ID.json`；CLI 的窗口列表不输出凭据。
-只接受本机连接；网络线程负责鉴权、收发和排队，所有 Tk、快照及命令处理都在窗口主线程。
-关闭时删除本窗口描述文件；强退遗留文件在发现时被忽略。`--runtime-dir` 仅用于隔离测试或自定义部署。
-此机制面向同一用户下的本机工具，不是远程网络服务，也不隔离已经控制同一用户账户的程序。
+Each normally started window listens on a random `127.0.0.1` port with its own random credentials. On Windows its descriptor is `%LOCALAPPDATA%\MarkPrompt\runtime\WINDOW_ID.json`. The CLI window list omits credentials.
 
-程序化构造可传 `MarkPromptApp(enable_bridge=False)` 关闭连接，或用 `bridge_directory=` 指定隔离目录。
-普通 GUI 功能不因通信启动失败而停止，界面会提示实际连接错误。
+Only local connections are accepted. The network thread authenticates, transfers, and queues requests; all Tk, snapshot, and command handling runs on the window's main thread. Closing a window removes its descriptor. Discovery ignores stale files left by forced termination. `--runtime-dir` supports isolated testing or custom deployment. This mechanism serves local tools running as the same user; it is not a remote network service and does not isolate programs that already control that user account.
+
+Programmatic construction can disable the connection with `MarkPromptApp(enable_bridge=False)` or choose an isolated directory with `bridge_directory=`. Normal GUI features continue if the communication service fails to start, and the UI reports the connection error.

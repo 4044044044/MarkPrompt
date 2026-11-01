@@ -1,4 +1,5 @@
 """Route input through confirmation, active modes, and command lookup."""
+from markprompt_core.commands.arguments import validate
 
 
 class CommandRouter:
@@ -11,6 +12,14 @@ class CommandRouter:
         return app.presentation.result_since(cursor)
 
     def _dispatch(self, app, value):
+        request = self.registry.parse(value) if value.startswith('/') else None
+        if request and request.spec.name == 'lang':
+            error = validate(request, app.language)
+            if error:
+                app.presentation.error('invalid_arguments', error)
+            else:
+                app._command_lang(request.argument)
+            return
         observation = self.registry.inspection(value)
         if observation:
             getattr(app, '_command_' + observation.spec.name)(observation.argument)

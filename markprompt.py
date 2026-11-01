@@ -41,13 +41,13 @@ from markprompt_core.commands.presentation import bind_presentation
 from markprompt_core.automation.controller import GuiControl
 from uuid import uuid4
 from markprompt_core.commands.actions import CommandActions
-from markprompt_core.ui.resources import THEMES, DEFAULT_THEME_NAME, TEXT
+from markprompt_core.ui.resources import THEMES, DEFAULT_THEME_NAME
 
 DEFAULT_THEME = THEMES['dark']
 LIGHT_THEME = THEMES['light']
 
-COMMAND_DESC = {language: REGISTRY.descriptions(language) for language in ('en', 'zh')}
-COMMAND_KEYWORDS = {language: REGISTRY.keywords(language) for language in ('en', 'zh')}
+from markprompt_core.localization import LANGUAGES, tr
+
 ROUTER = CommandRouter(REGISTRY)
 
 import os
@@ -235,7 +235,7 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
             font.nametofont("TkDefaultFont").actual("family"))
         self.ui_font = font.Font(root=self, family=self.cjk_family, size=TYPE_SIZES["body"], weight="normal")
         # Restore only an explicitly chosen workspace.
-        self.language = "en"
+        self.language = LANGUAGES.normalize(startup.get("language"))
         self._restored = False
         self._stale_workspace = None
         self.workspace = None
@@ -798,7 +798,7 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
         """Suggest registered keywords after a complete command name."""
         cmd, _, partial = value[1:].partition(" ")
         cmd = cmd.strip().lower()
-        kw_map = COMMAND_KEYWORDS.get(self.language, COMMAND_KEYWORDS["en"])
+        kw_map = REGISTRY.keywords(self.language)
         keywords = kw_map.get(cmd)
         # Stop suggesting once the keyword's following argument has begun.
         if not keywords or " " in partial:
@@ -826,12 +826,10 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
 
     def _ac_update_items(self):
         """Refresh visible completion rows while reusing their widgets."""
-        desc_map = COMMAND_DESC.get(self.language, COMMAND_DESC["en"])
+        desc_map = REGISTRY.descriptions(self.language)
         max_visible = MAX_AUTOCOMPLETE_VISIBLE
         total = len(self.ac_filtered)
-        count_text = "%d match%s" % (total, "" if total == 1 else "es")
-        if self.language == "zh":
-            count_text = "%d 个匹配" % total
+        count_text = self._t("matches") % total
         self.ac_count_label.config(text=count_text)
         showing = self.ac_filtered[self.ac_scroll_offset:self.ac_scroll_offset + max_visible]
         while len(self.ac_item_widgets) < len(showing):
@@ -974,7 +972,7 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
         self.ac_canvas.itemconfig(self.ac_canvas_window, width=self.ac_canvas.winfo_width())
 
     def _t(self, key):
-        return TEXT[self.language][key]
+        return tr(self.language, "ui." + key)
 
     # Business modes.
     # Mode properties read from the shared state stack.
@@ -1408,7 +1406,7 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
             self._stop_history_animation()
             self.console_history = []
         self.current_file = None
-        self._set_header("MARKPROMPT.EXE  ·  HOME")
+        self._set_header(self._t("home_header"))
         self._write("\n")
         for line in MARKPROMPT_ART:
             self._write("  " + line + "\n", "art")
@@ -1448,7 +1446,7 @@ class MarkPromptApp(SnapshotSurface, SearchAdapter, DocumentAdapter, ContentMixi
             text = "[%s] %02d  %s" % (kind, number, item.name)
             # Highlight matching notes and folders containing matches.
             rows.append((text, "find-hit") if self._find_hit_mark(item) else text)
-        self._show_console("DIR  " + str(path) + "  ·  %d " % len(items) + self._t("items_label"), rows or [self._t("empty")])
+        self._show_console(self._t("directory") + "  " + str(path) + "  ·  %d " % len(items) + self._t("items_label"), rows or [self._t("empty")])
         self._set_header("MARKPROMPT.EXE  ·  " + self._t("browse") + "  ·  " + str(path))
         return True
 

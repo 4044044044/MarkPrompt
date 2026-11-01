@@ -1,165 +1,165 @@
 # 📖 MarkPrompt
 
-> *给 Markdown 加一点 DOS 时代的乐趣。*
+> *A little DOS-era fun for your Markdown.*
 
-🌐 **简体中文** | [English](README.en.md)
+🌐 **English** | [简体中文](README.zh-CN.md)
 
-![Version](https://img.shields.io/badge/Version-2026.11.01--publish1-pink)
+![Version](https://img.shields.io/badge/Version-2026.11.01--i18n1-pink)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Author](https://img.shields.io/badge/Author-4044044044-lightpink)](https://github.com/4044044044)
 
-[✨ 特性](#features) · [📦 安装](#start) · [🚀 开始](#quickstart) · [📖 示例](#tutorials) · [📋 命令](#commands) · [🤖 CLI](#cli) · [🔨 打包](#build)
+[✨ Features](#features) · [📦 Install](#start) · [🚀 Start](#quickstart) · [📖 Examples](#tutorials) · [📋 Commands](#commands) · [🤖 CLI](#cli) · [🔨 Build](#build)
 
 ---
 
 <a id="features"></a>
 
-## ✨ 特性
+## ✨ Features
 
-一个偏爱 DOS 时代的本地 Markdown 小工具。文字界面、命令提示符、键盘操作，图的就是那份复古的乐趣。读几篇文档、记几条想法，也能用 CLI 和 AI 折腾点新玩法。
+A small local Markdown tool with a soft spot for DOS: a text-based interface, a command prompt, and plenty of keyboard controls. Read, jot down ideas, or let the CLI and AI join in.
 
-- 📖 **拖进来就能读** — Markdown、文本、文件夹都可以。
-- ✍️ **用命令改笔记** — 连续追加、按行修改、替换、撤销与重做。
-- 🔎 **想找什么就搜什么** — 文件名、工作区正文、文内关键词。
-- 🗂️ **笔记有个家** — 工作区、目录书签、标签、任务与归档。
-- 🖼️ **本地图片直接看** — 支持 PNG、JPG、JPEG，保留原色。
-- 🌗 **换个心情继续写** — 暗色 / 亮色主题，中英界面切换。
-- 🤖 **也给脚本留个入口** — 独立 CLI、窗口控制与 JSON 快照。
+- 📖 **Drop and read** — open Markdown, text files, or folders.
+- ✍️ **Edit with commands** — append, edit lines, replace, undo, and redo.
+- 🔎 **Find your notes** — search filenames, workspace content, or the current document.
+- 🗂️ **Keep things together** — workspaces, bookmarks, tags, tasks, and archives.
+- 🖼️ **Local images** — display PNG, JPG, and JPEG in Markdown, in their original colors.
+- 🌗 **Make yourself at home** — dark / light themes, English / Chinese UI, and saved language choices.
+- 🤖 **Bring your scripts** — standalone CLI, live window control, and JSON snapshots.
 
-原生 Tkinter 窗口。`.md` 支持命令编辑，`.txt` 只读。支持常用 Markdown 语法，暂不承诺完整 GFM 扩展；图片暂不加载网络地址。二进制或不支持的文件会显示 `Unknown`。
+Native Tkinter UI. `.md` files support command-based editing; `.txt` files are read-only. Common Markdown syntax is supported, with partial extension support. Remote images are not loaded. Binary or unsupported files show `Unknown`.
 
-![MarkPrompt 欢迎界面与虚构笔记目录](docs/images/home.png)
+![MarkPrompt welcome screen with a fictional notes folder](docs/images/home.png)
 
 ---
 
 <a id="start"></a>
 
-## 📦 安装
+## 📦 Install
 
-### 🪟 Windows 免安装版
+### 🪟 Windows portable edition
 
-1. 从 Release 附件下载 `MarkPrompt-2026.11.01-publish1-windows-x64.zip`。
-2. 解压，双击 **`MarkPrompt.exe`**。
-3. 想在终端使用，就运行 **`MarkPromptCLI.exe`**。
+1. Download `MarkPrompt-2026.11.01-i18n1-windows-x64.zip` from the release assets.
+2. Extract it and double-click **`MarkPrompt.exe`**.
+3. For terminal use, run **`MarkPromptCLI.exe`**.
 
-无需另装 Python。包内的第三方许可声明请随程序保留。
+No Python installation is required. Keep the included third-party notices alongside the application.
 
-### 🐍 从源码启动
+### 🐍 Run from source
 
-在本 README 所在目录打开终端，安装依赖并启动：
+Open a terminal in this README's directory, install dependencies, then launch:
 
 ```powershell
 py -m pip install -r requirements.txt
 py markprompt.py
 ```
 
-Windows 也可以在安装依赖后双击 `markprompt.py`。安装和启动请使用同一个 Python 环境。
+On Windows, you can also double-click `markprompt.py` after installing dependencies. Use the same Python environment for installation and launch.
 
-🧰 依赖：Python、Tkinter、Pillow、tkinterdnd2。已验证 Windows / Python 3.9.10；其他系统尚未实机验收。没有 `py` 命令时，可替换为对应环境的 `python` 或 `python3`。
+🧰 Requires Python, Tkinter, Pillow, and tkinterdnd2. Verified on Windows / Python 3.9.10; other systems have not been tested on-device. Replace `py` with your environment's `python` or `python3` where needed.
 
 ---
 
 <a id="quickstart"></a>
 
-## 🚀 快速开始
+## 🚀 Quick start
 
-把笔记文件夹拖进窗口，再依次输入：
+Drop your notes folder into the window, then enter:
 
 ```text
 /workspace here
 /new Hello
-/append 今天开始用 MarkPrompt 记笔记。
+/append My first note in MarkPrompt.
 /save
 ```
 
-🎉 当前文件夹成为工作区，`Hello.md` 也写好了第一条记录。
+🎉 Your folder is now the workspace, and `Hello.md` has its first entry.
 
-拖入文件夹只会进入该目录；`/workspace here` 才会把它设为笔记工作区。正文修改先留在内存，记得 `/save`。
+Dropping a folder opens it; `/workspace here` makes it your notes workspace. Text edits stay in memory until you `/save`.
 
-### ⌨️ 常用快捷键
+### ⌨️ Keyboard shortcuts
 
-| 按键 | 用途 |
+| Key | Action |
 | --- | --- |
-| `/` | 聚焦命令输入框 |
-| `Enter` | 提交输入 |
-| `Tab` | 补全命令 |
-| `↑` / `↓` | 候选项导航；输入框为空且未选中文本时滚动 |
-| `Ctrl + P` | 按文件名查找 |
-| `Ctrl + F` | 文内搜索 |
-| `Ctrl + O` | 标题大纲 |
-| `F3` / `Shift + F3` | 下一个 / 上一个命中 |
-| `Ctrl + S` | 保存 |
-| `Ctrl + Z` / `Ctrl + Y` | 撤销 / 重做 |
+| `/` | Focus command input |
+| `Enter` | Submit input |
+| `Tab` | Complete a command |
+| `↑` / `↓` | Navigate suggestions; scroll with empty input and no text selection |
+| `Ctrl + P` | Find a filename |
+| `Ctrl + F` | Search this note |
+| `Ctrl + O` | Show outline |
+| `F3` / `Shift + F3` | Next / previous hit |
+| `Ctrl + S` | Save |
+| `Ctrl + Z` / `Ctrl + Y` | Undo / redo |
 
-💡 输入 `/s`，就能看到匹配的命令和用途。
+💡 Type `/s` to see matching commands and their descriptions.
 
-![输入 /s 时的命令补全候选](docs/images/completion.png)
+![Command completion for the prefix /s](docs/images/completion.png)
 
 ---
 
 <a id="tutorials"></a>
 
-## 📖 使用示例
+## 📖 Examples
 
-### ✍️ 例子 1：连续记几条
+### ✍️ Example 1: Keep writing
 
-打开一篇 Markdown，输入 `/append`，接着逐条输入内容：
+Open a Markdown file, enter `/append`, then submit your notes one at a time:
 
 ```text
 /append
-第一条想法
-第二条想法
+First idea
+Second idea
 /end
 /save
 ```
 
-💡 `/append 内容` 只追加一次；单独 `/append` 进入连续追加。`/end` 退出当前模式，不等于保存。
+💡 `/append text` appends once; `/append` enters continuous capture. `/end` leaves the current mode without saving.
 
-![进入追加模式，写入两条记录，退出模式并保存](docs/images/append-save.gif)
+![Enter capture mode, append two notes, leave the mode, and save](docs/images/append-save.gif)
 
-### 🔎 例子 2：找文件，也找关键词
+### 🔎 Example 2: Find a note or a keyword
 
-| 想找什么 | 输入示例 |
+| Looking for | Example |
 | --- | --- |
-| 文件名带 meeting | `/files meeting` |
-| 工作区中提到 deadline 的笔记 | `/find deadline` |
-| 当前文档中的 todo | `/search todo` |
-| 当前文档中的 todo，不分大小写 | `/search -i todo` |
+| A filename containing meeting | `/files meeting` |
+| Workspace notes mentioning deadline | `/find deadline` |
+| todo in the current note | `/search todo` |
+| Case-insensitive todo in this note | `/search -i todo` |
 
-📂 `/find` 在目录界面使用，文档中先 `/back`。打开命中文档后会自动进入文内搜索并定位；再次 `/back` 可返回原搜索结果和位置。
+📂 Use `/find` from a directory view; leave a document with `/back` first. Opening a matching file starts in-note search at a hit. `/back` restores the workspace results and position.
 
-![搜索 TODO 的两个命中与按行修改命令](docs/images/search.png)
+![Two TODO hits and a command to edit only line 7](docs/images/search.png)
 
-### 🛠️ 例子 3：搜到以后怎么改
+### 🛠️ Example 3: Edit what you found
 
-假设第 12 行是 `接口A 调用 接口B`：
+Suppose line 12 reads `API_A calls API_B`:
 
 ```text
-/search 接口
-/line 12 服务
+/search API
+/line 12 service
 /save
 /end
 ```
 
-这一行变成 `服务A 调用 服务B`，其他行保持原样。
+That line becomes `service_A calls service_B`; other lines are unchanged.
 
-| 操作 | 普通阅读 | 搜索中 |
+| Action | Normal reading | During search |
 | --- | --- | --- |
-| `/line 12 内容` | 替换第 12 整行 | 只替换该行命中 |
-| `/line delete 12` | 删除第 12 整行 | 只删除该行命中 |
-| `/line 12` | 跳到第 12 行 | 把搜索范围限于该行 |
-| `/replace 内容` | 需先搜索 | 替换当前范围全部命中 |
-| `/delete` | 需先搜索 | 删除当前范围全部命中 |
+| `/line 12 text` | Replace the whole line | Replace hits on that line |
+| `/line delete 12` | Delete the whole line | Delete hits on that line |
+| `/line 12` | Jump to line 12 | Limit search to that line |
+| `/replace text` | Search first | Replace all hits in scope |
+| `/delete` | Search first | Delete all hits in scope |
 
-💾 保存、撤销和重做都会保留搜索状态。重新 `/search 关键词` 可恢复全文搜索；搜索中不能追加，先 `/end` 再 `/append`。每次文内搜索使用一个关键词。
+💾 Save, undo, and redo preserve search mode. Start `/search keyword` again to search the whole note. Leave search with `/end` before appending. Each in-note search takes one keyword.
 
-🎬 搜索 TODO，把第 7 行的命中改成 DONE，再保存。另一处命中仍然保留。
+🎬 Find TODO, change the hit on line 7 to DONE, then save. The other hit stays in place.
 
-![搜索、修改单行命中并保存，搜索模式保持不变](docs/images/search-edit.gif)
+![Search, edit one line, and save without leaving search mode](docs/images/search-edit.gif)
 
-### 🖼️ 例子 4：放入本地图片
+### 🖼️ Example 4: Add a local image
 
-图片路径相对于 Markdown 文件，例如：
+Image paths are relative to the Markdown file:
 
 ```text
 notes/
@@ -168,162 +168,164 @@ notes/
     └── photo.jpg
 ```
 
-在 `Hello.md` 中写入：
+Inside `Hello.md`:
 
 ```markdown
-![一张照片](images/photo.jpg)
-[访问网站](https://example.com)
+![A photo](images/photo.jpg)
+[Visit a website](https://example.com)
 ```
 
-图片保留原色。查看文内链接可用 `/external links`，按所在行打开可用 `/external link 行号`。
+Images retain their original colors. Use `/external links` to list document links, then `/external link N` to open a link on source line N.
 
-🧊 示例中的玻璃作品由项目作者原创，展示时作了横幅裁切。
+🧊 The glass artwork is an original work by the project author, cropped to fit the demo.
 
-![包含任务、链接和本地图片的简短 Markdown 笔记](docs/images/reader.png)
+![A short Markdown note with tasks, a link, and a local image](docs/images/reader.png)
 
 ---
 
 <a id="appearance"></a>
 
-## 🌗 两种配色，一本笔记
+## 🌗 Two moods, one notebook
 
-暗色留一点 DOS 情怀，亮色换一张暖色纸。选中文字时，暗色用纸白，亮色用琥珀。
+Dark for a little DOS nostalgia; light for a warm paper feel. Text selection is paper-white in dark mode and amber in light mode.
 
-| 🌑 暗色 | ☀️ 亮色 |
+| 🌑 Dark | ☀️ Light |
 | --- | --- |
-| ![暗色主题与纸白选中效果](docs/images/theme-dark.png) | ![亮色主题与琥珀选中效果](docs/images/theme-light.png) |
+| ![Dark theme and paper-white selection](docs/images/theme-dark.png) | ![Light theme and amber selection](docs/images/theme-light.png) |
 
 ---
 
 <a id="commands"></a>
 
-## 📋 命令说明
+## 📋 Command reference
 
-在窗口底部输入。`<…>` 为必填，`[…]` 为可选；输入时不要带尖括号或方括号。`N` 表示编号。
+Type commands in the bottom input. `<…>` means required, `[…]` means optional; omit the brackets when typing. `N` is a number.
 
-### 📂 文件与目录
+### 📂 Files & folders
 
-| 命令 | 说明 |
+| Command | Description |
 | --- | --- |
-| `/open [目标]` | 打开路径、列表编号或书签；无参数进入连续打开 |
-| `/workspace <目录或here>` | 设置笔记工作区 |
-| `/ls [目录]` | 列出目录内容 |
-| `/cd <目录>` | 进入目录 |
-| `/up` | 上一级目录 |
-| `/tree` | 查看两层目录树 |
-| `/back` | 返回上一视图或搜索结果 |
-| `/home` | 返回首页 |
-| `/pwd` | 显示当前目录 |
-| `/files [名称]` | 按文件名查找 |
-| `/recent [名称]` | 查看最近打开的文件 |
-| `/bookmark [add 名称 [目录]\|list\|remove 名称]` | 添加、查看或移除目录书签 |
-| `/new <标题>` | 在工作区新建 Markdown |
-| `/jot <标题>` | 新建并进入连续追加 |
-| `/import <路径.md>` | 复制 Markdown 到工作区 |
-| `/saveas <名称>` | 另存为 |
-| `/export txt` | 将当前正文导出为纯文本 |
-| `/archive` | 保存并移入工作区归档 |
-| `/trash` | 保存并移入工作区回收站 |
-| `/restore <名称>` | 从工作区回收站恢复 |
-| `/reveal` | 在系统文件管理器中显示所在目录 |
+| `/open [target]` | Open a path, list number, or bookmark; no argument enters OPEN mode |
+| `/workspace <folder\|here>` | Set the notes workspace |
+| `/ls [folder]` | List a directory |
+| `/cd <folder>` | Change directory |
+| `/up` | Go up one directory |
+| `/tree` | Show a two-level directory tree |
+| `/back` | Return to the previous view or search results |
+| `/home` | Go home |
+| `/pwd` | Show the current directory |
+| `/files [name]` | Filter filenames |
+| `/recent [name]` | List recent files |
+| `/bookmark [add name [folder]\|list\|remove name]` | Add, list, or remove folder bookmarks |
+| `/new <title>` | Create a Markdown note in the workspace |
+| `/jot <title>` | Create a note and start capture |
+| `/import <path.md>` | Copy a Markdown file into the workspace |
+| `/saveas <name>` | Save a copy under a new name |
+| `/export txt` | Export current text as a text file |
+| `/archive` | Save and move to the workspace archive |
+| `/trash` | Save and move to the workspace trash |
+| `/restore <name>` | Restore from the workspace trash |
+| `/reveal` | Open the containing folder in the file manager |
 
-🧭 **目录关键词**
+🧭 **Folder keywords**
 
-| 输入 | 含义 |
+| Input | Meaning |
 | --- | --- |
-| `/open desktop` | 桌面 |
-| `/open workspace` 或 `/open ws` | 工作区根目录 |
-| `/open @名称` | 对应目录书签 |
-| `/open 3` | 当前列表第 3 项 |
-| `/workspace here` | 把当前浏览目录设为工作区 |
-| `/cd ..` | 父目录 |
+| `/open desktop` | Desktop |
+| `/open workspace` or `/open ws` | Workspace root |
+| `/open @name` | A named folder bookmark |
+| `/open 3` | Item 3 in the current list |
+| `/workspace here` | Make the current directory the workspace |
+| `/cd ..` | Parent directory |
 
-`desktop` 是 `/open` 的关键词。要将桌面设为工作区：先 `/open desktop`，再 `/workspace here`。其他目录可直接填写路径。
+`desktop` is an `/open` keyword. To use it as your workspace, run `/open desktop`, then `/workspace here`. For other folders, enter a path.
 
-### ✍️ 编辑与阅读
+### ✍️ Editing & reading
 
-| 命令 | 说明 |
+| Command | Description |
 | --- | --- |
-| `/append [内容]` | 追加一次；无参数连续追加 |
-| `/line <N> [内容]` | 定位或修改指定行；搜索时仅处理命中 |
-| `/line delete <N>` | 删除整行；搜索时仅删除命中 |
-| `/title <标题>` | 修改正文一级标题 |
-| `/save` | 保存当前修改 |
-| `/undo` | 撤销 |
-| `/redo` | 重做 |
-| `/preview` | 重新渲染预览 |
-| `/source` | 查看 Markdown 源文 |
-| `/view` | 切换预览与源文 |
-| `/outline [N]` | 列出标题或跳到指定标题 |
-| `/reload` | 刷新当前文件或目录 |
-| `/external [file\|links\|link N [序号]\|open 目标]` | 用系统应用打开当前文件或链接；默认打开文件 |
+| `/append [text]` | Append once, or enter continuous capture |
+| `/line <N> [text]` | Jump to or edit a line; search mode edits hits only |
+| `/line delete <N>` | Delete a line; search mode deletes hits only |
+| `/title <title>` | Change the top-level heading in the text |
+| `/save` | Save edits |
+| `/undo` | Undo |
+| `/redo` | Redo |
+| `/preview` | Render the preview again |
+| `/source` | View Markdown source |
+| `/view` | Toggle preview and source |
+| `/outline [N]` | List headings or jump to a heading |
+| `/reload` | Reload the file or directory |
+| `/external [file\|links\|link N [index]\|open target]` | Open the file or a link with a system app; defaults to the file |
 
-💡 `/title` 改正文标题；要另存文件用 `/saveas`。源文视图用于阅读，修改仍通过命令完成。
+💡 `/title` changes the heading; use `/saveas` to save under another filename. Source view is for reading; editing uses commands.
 
-### 🔎 搜索与整理
+### 🔎 Search & organize
 
-| 命令 | 说明 |
+| Command | Description |
 | --- | --- |
-| `/find <关键词>` | 搜索工作区正文，不分大小写 |
-| `/search [-i] [关键词]` | 搜当前文档；`-i` 忽略大小写；无词进入搜索模式 |
-| `/next` | 下一个命中 |
-| `/prev` | 上一个命中 |
-| `/replace <内容>` | 替换当前搜索范围全部命中 |
-| `/delete` | 删除当前搜索范围全部命中 |
-| `/tasks` | 查看工作区未完成任务 |
-| `/check <N>` | 切换当前文档第 N 个任务的完成状态，非行号 |
-| `/tag [add 标签\|find 标签]` | 查看、添加或查找标签；多个标签用逗号分隔 |
-| `/tags` | 查看工作区标签及数量 |
+| `/find <keyword>` | Search workspace content, ignoring case |
+| `/search [-i] [keyword]` | Search this note; `-i` ignores case; no keyword enters SEARCH mode |
+| `/next` | Next hit |
+| `/prev` | Previous hit |
+| `/replace <text>` | Replace all hits in the current scope |
+| `/delete` | Delete all hits in the current scope |
+| `/tasks` | List open tasks in the workspace |
+| `/check <N>` | Toggle task N in this note; N is a task index, not a line number |
+| `/tag [add tags\|find tag]` | View, add, or find tags; separate added tags with commas |
+| `/tags` | List workspace tags and counts |
 
-### ⚙️ 模式与设置
+### ⚙️ Modes & settings
 
-| 命令 | 说明 |
+| Command | Description |
 | --- | --- |
-| `/end` | 退出一层业务模式，恢复上一层 |
-| `/status` | 查看当前文件、工作区和模式 |
-| `/lang [zh\|en]` | 查看或切换界面语言 |
-| `/theme [dark\|light]` | 查看或切换主题 |
-| `/dark` | 暗色主题 |
-| `/light` | 亮色主题 |
-| `/animation [on\|off]` | 查看或切换动画 |
-| `/clear` | 清理命令记录，保留阅读内容 |
-| `/snapshot [--full] [文件.json]` | 查看会话数据，可导出 JSON；`--full` 包含完整正文 |
-| `/help` | 查看命令帮助 |
-| `/quit` | 退出程序 |
+| `/end` | Leave one mode and resume its parent |
+| `/status` | Show file, workspace, and mode status |
+| `/lang [code]` | List available languages or switch and remember a language |
+| `/theme [dark\|light]` | Show or switch the theme |
+| `/dark` | Dark theme |
+| `/light` | Light theme |
+| `/animation [on\|off]` | Show or toggle animation |
+| `/clear` | Clear command history while keeping the document |
+| `/snapshot [--full] [file.json]` | Inspect session data or export JSON; `--full` includes full text |
+| `/help` | Show command help |
+| `/quit` | Quit |
 
-🔁 **连续模式**：`OPEN>` 连续打开、`FIND>` 工作区搜索、`SEARCH>` 文内搜索、`APPEND>` 连续追加。最多两层，允许 `FIND → OPEN`、`OPEN → APPEND`；用 `/end` 逐层退出。
+🌐 **Language**: Unconfigured sessions start in English. `/lang` lists the discovered languages; `/lang zh` selects Simplified Chinese and `/lang en` selects English. The GUI remembers the choice in its settings. Independent CLI sessions save it when you supply `--config settings.json`; without `--config`, it lasts for that process. Missing translations fall back to English. Switching language preserves drafts, searches, and pending confirmations. Command names, keywords, JSON keys, and error codes stay stable. See [localization and language contributions](docs/localization.md).
 
-✅ **确认提示**：按提示输入 `save`（保存）、`discard`（放弃）或 `cancel`（取消）；覆盖确认使用 `y` / `n`。创建、导入、导出、归档和移入回收站等操作会直接涉及磁盘。
+🔁 **Continuous modes**: `OPEN>` opens repeatedly, `FIND>` searches the workspace, `SEARCH>` searches a note, and `APPEND>` captures text. Modes have at most two layers: `FIND → OPEN` or `OPEN → APPEND`. `/end` leaves one layer.
 
-⚡ **快捷别名**：`/ws` → `/workspace`，`/bm` → `/bookmark`，`/grep` → `/find`，`/show` → `/preview`，`/?` → `/help`。`/setws` 默认当前目录；`/fsearch 词` 等于 `/search -i 词`；`/linedel N` 等于 `/line delete N`。旧 `/ext` 无参数列出链接，有编号按行打开，其他参数作为外部目标。
+✅ **Confirmation prompts**: Choose `save`, `discard`, or `cancel`; use `y` / `n` for overwrite confirmation. Creating, importing, exporting, archiving, and moving to trash involve disk operations directly.
+
+⚡ **Aliases**: `/ws` → `/workspace`, `/bm` → `/bookmark`, `/grep` → `/find`, `/show` → `/preview`, `/?` → `/help`. `/setws` defaults to the current directory; `/fsearch word` means `/search -i word`; `/linedel N` means `/line delete N`. Legacy `/ext` lists links with no argument, opens a link by line number, or opens another supplied target.
 
 ---
 
 <a id="cli"></a>
 
-## 🤖 CLI 与 AI
+## 🤖 CLI & AI
 
-### 🧪 独立运行
+### 🧪 Run without a window
 
-把示例中的 `C:\Notes` 换成你的笔记目录。多个 `-c` 在同一个会话中依次执行，修改后仍需 `/save`。
+Replace `C:\Notes` with your notes folder. Multiple `-c` arguments share one session; save edits explicitly.
 
 ```powershell
-# 查看命令能力
+# List commands and capabilities
 py markprompt_cli.py commands --json
 
-# 读取文档与结构化快照
+# Read a note and its structured snapshot
 py markprompt_cli.py exec --workspace "C:\Notes" --file "C:\Notes\Hello.md" -c "/snapshot --full" --json
 
-# 追加并保存
+# Append and save
 py markprompt_cli.py exec --workspace "C:\Notes" --file "C:\Notes\Hello.md" -c "/append Added from CLI." -c "/save" --json
 
-# 保持交互会话
-py markprompt_cli.py shell --workspace "C:\Notes"
+# Keep an interactive session and remember the language
+py markprompt_cli.py shell --workspace "C:\Notes" --config settings.json
 ```
 
-📜 批量执行：把命令逐行写入 `workflow.txt`，运行 `py markprompt_cli.py run --workspace "C:\Notes" --script workflow.txt --json`。图形界面相关能力请以 `commands --json` 的结果为准。
+📜 For batch work, write one command per line in `workflow.txt`, then run `py markprompt_cli.py run --workspace "C:\Notes" --script workflow.txt --json`. Check `commands --json` for each command's CLI capabilities.
 
-### 🪟 连接运行中的窗口
+### 🪟 Connect to a running window
 
 ```powershell
 py markprompt_cli.py gui windows --json
@@ -331,21 +333,21 @@ py markprompt_cli.py gui snapshot --full --json
 py markprompt_cli.py gui exec -c "/status" --json
 ```
 
-多窗口时加 `--window 窗口ID`。快照包含文档、模式、搜索、待确认操作等数据，适合 AI 读取；`--full` 会包含正文，分享前留意内容。
+With multiple windows, add `--window WINDOW_ID`. Snapshots expose document, mode, search, and pending-confirmation data for AI. `--full` includes document text; review it before sharing.
 
-遇到确认，读取快照中的确认 ID，再用 `gui respond --confirmation ID save --json` 回答；也可选 `discard`、`cancel`、`y`、`n`。
+When confirmation is required, read its ID from the snapshot and use `gui respond --confirmation ID save --json`, or choose `discard`, `cancel`, `y`, or `n` as appropriate.
 
-📘 详细说明：[CLI](docs/cli.md) · [AI 快照](docs/snapshots.md) · [窗口控制](docs/window-control.md)
+📘 More details: [CLI](docs/cli.md) · [AI snapshots](docs/snapshots.md) · [Window control](docs/window-control.md) · [Localization](docs/localization.md) · [Release notes](docs/release-notes.md)
 
 ---
 
 <a id="build"></a>
 
-## 🔨 编译与打包
+## 🔨 Build executables
 
-以下为 Windows PowerShell 示例，在仓库根目录执行。使用独立虚拟环境打包，可执行文件放入 `dist/`，构建临时文件放入 `build/`。
+Run these Windows PowerShell examples from the repository root. Use a dedicated virtual environment; executables go into `dist/` and temporary build files into `build/`.
 
-### ① 🧰 准备环境
+### ① 🧰 Prepare
 
 ```powershell
 py -m venv .venv
@@ -356,71 +358,73 @@ $sourceDir = (Get-Location).Path
 & $buildPython -m pip install pyinstaller==6.22.3
 ```
 
-### ② 🖥️ 窗口版
+### ② 🖥️ GUI
 
 ```powershell
 & $buildPython -m PyInstaller --clean --onefile --windowed --name MarkPrompt `
-  --paths "$sourceDir" --icon "$sourceDir/MarkPrompt.ico" `
+  --paths "$sourceDir" --collect-submodules markprompt_core.localization --icon "$sourceDir/MarkPrompt.ico" `
   --add-data "$sourceDir/MarkPrompt.ico:." --add-data "$sourceDir/MarkPrompt.png:." `
   --distpath dist --workpath build/gui --specpath build/spec `
   "$sourceDir/markprompt.py"
 ```
 
-### ③ ⌨️ 命令行版
+### ③ ⌨️ CLI
 
 ```powershell
 & $buildPython -m PyInstaller --clean --onefile --console --name MarkPromptCLI `
-  --paths "$sourceDir" --icon "$sourceDir/MarkPrompt.ico" `
+  --paths "$sourceDir" --collect-submodules markprompt_core.localization --icon "$sourceDir/MarkPrompt.ico" `
   --distpath dist --workpath build/cli --specpath build/spec `
   "$sourceDir/markprompt_cli.py"
 ```
 
-🎁 输出：`dist/MarkPrompt.exe` 与 `MarkPromptCLI.exe`。
+🌐 Language resources are ordinary Python modules. `--collect-submodules markprompt_core.localization` includes all dynamically discovered locales in both executables; no JSON language data files or extra runtime dependencies are needed.
 
-`--onefile` 将运行时和依赖一起打包，因此文件会比源码大。CLI 保留控制台，用于输入和 JSON 输出。其他系统需在对应系统上打包。参数见 [PyInstaller 官方文档](https://pyinstaller.org/en/stable/usage.html)。
+🎁 Output: `dist/MarkPrompt.exe` and `MarkPromptCLI.exe`.
 
-### ④ ✅ 发布前
+`--onefile` bundles the runtime and dependencies, so executables are larger than the source. The CLI keeps its console for input and JSON output. Build on each target operating system; see the [PyInstaller documentation](https://pyinstaller.org/en/stable/usage.html).
 
-- 🧪 打开生成的窗口版，检查真实文件 / 文件夹拖入、本地 PNG / JPG、搜索编辑和保存。
-- 🤖 运行 `MarkPromptCLI.exe commands --json`，再检查一次文档读取和窗口快照。
-- 🔐 不要把个人 `markprompt.json` 或笔记放进发布包；配置会在使用时创建。
-- 📄 随包保留 [第三方许可](docs/third-party-licenses/README.md)，并补齐所用 Python、Tcl/Tk 和打包运行时的许可声明。
+### ④ ✅ Before distributing
 
-📌 Windows x64 可执行文件已通过本机启动、PNG/JPG 显示、搜索修改保存和 CLI 窗口连接检查。其他平台的构建仍需单独验收。
+- 🧪 Launch the built GUI and check file / folder drops, local PNG / JPG, search, editing, and saving.
+- 🤖 Run `MarkPromptCLI.exe commands --json`, then check note reading and live snapshots.
+- 🔐 Leave personal `markprompt.json` and notes out of the release; settings are created during use.
+- 📄 Include the [third-party notices](docs/third-party-licenses/README.md) and the applicable Python, Tcl/Tk, and packaging-runtime license notices.
+
+📌 The Windows x64 executables have passed local startup, PNG/JPG display, search/edit/save, and live CLI-control checks. Builds for other platforms need their own verification.
 
 ---
 
 <a id="license"></a>
 
-## 📄 授权与第三方组件
+## 📄 Licensing & third-party components
 
-🧊 本项目源码与作者提供的原创示例图片采用 [MIT 许可证](LICENSE)。版权归 2026 MarkPrompt contributors 所有。[作者主页](https://github.com/4044044044)。第三方组件沿用各自许可证。
+🧊 The source code and original sample artwork supplied by the project author are released under the [MIT License](LICENSE). Copyright © 2026 MarkPrompt contributors. [Author profile](https://github.com/4044044044). Third-party components retain their own licenses.
 
-| 组件 | 版本 | 用途 | 许可证 |
+| Component | Version | Purpose | License |
 | --- | --- | --- | --- |
-| Pillow | 11.3.0 | 解码本地 PNG、JPG 图片 | MIT-CMU |
-| tkinterdnd2 | 0.7.0 | 文件与文件夹拖拽 | MIT |
+| Pillow | 11.3.0 | Decode local PNG and JPG images | MIT-CMU |
+| tkinterdnd2 | 0.7.0 | File and folder drag and drop | MIT |
 
-📦 安装依赖见 [requirements.txt](requirements.txt)；完整版权、许可原文与 TkDND 原生组件说明见 [第三方许可](docs/third-party-licenses/README.md)。第三方组件沿用各自许可证。
+📦 Install dependencies from [requirements.txt](requirements.txt). Full copyright and license texts, including notes for native TkDND components, are in [third-party notices](docs/third-party-licenses/README.md). Third-party components retain their own licenses.
 
-GitHub 可以识别依赖清单并显示依赖信息；许可声明仍由项目随附。发布源码时通过依赖清单安装，发布可执行文件时还需按实际打包内容附带相应声明。
+GitHub can detect dependencies from the manifest; license notices are supplied with the project. Source users install dependencies from the manifest. Executable distributions must also include the notices applicable to the components actually bundled.
 
 ---
 
-## 🛠️ 遇到问题
+## 🛠️ Troubleshooting
 
-| 现象 | 处理 |
+| Issue | Try this |
 | --- | --- |
-| 双击没反应 | 在终端运行 `py markprompt.py` 查看错误，并确认依赖装在同一环境 |
-| 拖拽没有反应 | 检查 tkinterdnd2；Windows 下让窗口与资源管理器使用相同权限 |
-| 图片不显示 | 检查相对路径、文件是否存在，以及是否为本地 PNG / JPG / JPEG |
-| 修改没有写入文件 | 执行 `/save`，并检查保存结果 |
-| 不确定自己在哪个模式 | 输入 `/status`；用 `/end` 逐层退出 |
+| Double-click does nothing | Run `py markprompt.py` in a terminal to see errors; check that dependencies use the same Python environment |
+| Drops do nothing | Check tkinterdnd2; on Windows, use matching privileges for the app and Explorer |
+| An image is missing | Check the relative path, file existence, and supported local format: PNG, JPG, or JPEG |
+| Edits are not on disk | Run `/save` and check its result |
+| Unsure which mode is active | Run `/status`; use `/end` to leave one mode at a time |
 
 ---
 
-📷 演示使用 `E:\MPdemo` 中的虚构笔记与独立配置，截图仅保留工具内部界面。
+📷 All demos use fictional notes in `E:\MPdemo` and an isolated configuration. Screenshots show only the app content.
 
-🗓️ 文档更新：**2026-11-01**
+🗓️ Updated: **2026-11-01**
 
 *Made with ⌨️ by [MarkPrompt contributors](https://github.com/4044044044)*

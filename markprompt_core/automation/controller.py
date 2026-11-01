@@ -113,12 +113,12 @@ class GuiControl:
             if segment.startswith('/'):
                 request = REGISTRY.parse(segment)
                 if request:
-                    error = validate(request)
+                    error = validate(request, self.app.language)
                     if error:
                         return error
             elif self.app.states.active == 'search':
                 request = REGISTRY.parse('/search ' + ('-i ' if self.app.search_fuzzy else '') + segment)
-                error = validate(request)
+                error = validate(request, self.app.language)
                 if error:
                     return error
         return None

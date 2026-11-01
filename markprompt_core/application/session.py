@@ -9,7 +9,7 @@ from markprompt_core.documents.content import ContentMixin, search_hits
 from markprompt_core.documents.session import DocumentAdapter, DocumentSession
 from markprompt_core.search.session import SearchAdapter, SearchSession
 from markprompt_core.application.navigation import NavigationMemory
-from markprompt_core.ui.resources import TEXT
+from markprompt_core.localization import LANGUAGES, tr
 from markprompt_core.commands.routing import CommandRouter
 from markprompt_core.application.states import BusinessStates
 from markprompt_core.storage.local import StorageError, StorageServices
@@ -22,10 +22,11 @@ ROUTER = CommandRouter(REGISTRY)
 
 
 def capabilities(language='en'):
+    keywords = REGISTRY.keywords(language)
     return [{'name': spec.name, 'description': spec.description(language), 'usage': spec.usage,
              'category': spec.category, 'cli_supported': spec.name not in GUI_ONLY,
              'aliases': [alias.name for alias in spec.aliases],
-             'keywords': [row[0] for row in spec.keywords]}
+             'keywords': [row[0] for row in keywords.get(spec.name, ())]}
             for spec in sorted(REGISTRY.specs.values(), key=lambda spec: spec.name)]
 
 
@@ -43,7 +44,7 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
         self.workspace = self.current_dir = self.current_file = None
         self.config_path = Path(config_path).resolve() if config_path is not None else None
         self._preferences = {}
-        self.language = 'en'
+        self.language = LANGUAGES.normalize(self._load_config().get('language'))
         self.view_mode = 'console'
         self.listed_items, self.recent_files = {}, []
         self.console_history, self.console_rows, self.console_title = [], [], ''
@@ -62,7 +63,7 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
             self.workspace = self.current_dir = root
 
     def _t(self, key):
-        return TEXT.get(self.language, TEXT['en']).get(key, key)
+        return tr(self.language, 'ui.' + key)
 
     def _command_data(self, **data):
         self._data.update(data)
@@ -113,9 +114,9 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
         self._save_config(config)
 
     def _command_lang(self, argument):
-        if argument:
-            self.language = argument
-        self._command_data(language=self.language)
+        if argument and not self._set_language(argument):
+            return
+        self._command_data(language=self.language, languages=[{'code': item.code, 'name': item.name} for item in LANGUAGES.languages()])
 
     def _recovery_sync(self):
         # Keep CLI drafts separate from the GUI's recovery file.
@@ -220,7 +221,7 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
 
     def _answer_navigation(self, value):
         if value not in {'save', 'discard', 'cancel'}:
-            self._command_error('confirmation_required', 'Reply save, discard, or cancel')
+            self._command_error('confirmation_required', self._t('confirm_reply'))
             return
         if value == 'cancel':
             self._pending_navigation = None
@@ -267,7 +268,7 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
                         'lines': len((self.buffer_text or '').splitlines())}
             if include_text:
                 document['text'] = self.buffer_text
-        return {'workspace': str(self.workspace) if self.workspace else None,
+        return {'language': self.language, 'workspace': str(self.workspace) if self.workspace else None,
                 'directory': str(self.current_dir) if self.current_dir else None,
                 'document': document, 'business': [frame.kind for frame in self.states.frames],
                 'prompt': ('CONFIRM' if self._pending_navigation else
@@ -285,6 +286,11 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
                 'truncated': len(self.console_rows) > 200}}
 
     def _dispatch(self, value):
+        language_request = REGISTRY.parse(value) if value.startswith('/') else None
+        if language_request and language_request.spec.name == 'lang' and len(split_chain(value)) == 1:
+            self._active_command = 'lang'
+            ROUTER.dispatch(self, value)
+            return
         if REGISTRY.inspection(value):
             self._active_command = 'snapshot'
             ROUTER.dispatch(self, value)
@@ -306,16 +312,16 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
                                         'open': 'open'}.get(self.states.active, 'open')
                 if self.states.active == 'search':
                     syntax = REGISTRY.parse('/search ' + ('-i ' if self.search_fuzzy else '') + segment)
-                    error = validate(syntax)
+                    error = validate(syntax, self.language)
                     if error:
                         self._command_error('invalid_arguments', error)
                         break
             if request:
                 self._active_command = request.spec.name
                 if request.spec.name in GUI_ONLY:
-                    self._command_error('gui_required', 'This command requires the GUI: /' + request.spec.name)
+                    self._command_error('gui_required', self._t('gui_required') + request.spec.name)
                     break
-                error = validate(request)
+                error = validate(request, self.language)
                 if error:
                     self._command_error('invalid_arguments', error)
                     break
@@ -333,7 +339,7 @@ class Session(SearchAdapter, DocumentAdapter, ContentMixin, StorageMixin, Workfl
         before = self.buffer_text
         try:
             if self.closed and not REGISTRY.inspection(value):
-                self._command_error('session_closed', 'The session is already closed')
+                self._command_error('session_closed', self._t('session_closed'))
             elif value.strip():
                 was_pending = self.pending
                 self._dispatch(value.strip() if '\n' not in value else value)

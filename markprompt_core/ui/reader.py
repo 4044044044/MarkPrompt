@@ -1,9 +1,9 @@
 """Render Markdown and map displayed content back to source lines."""
+from markprompt_core.localization import tr
 import re
 import tkinter as tk
 from markprompt_core.ui.images import Image, LocalImageStore
 from markprompt_core.documents.markdown import inline_images
-from markprompt_core.ui.resources import TEXT
 from markprompt_core.ui.layout import display_width
 try:
     from PIL import ImageTk
@@ -93,7 +93,7 @@ class MarkdownRenderer:
         self.source_mode = False
         self.has_images = False
         self.image_width = 640
-        self.translate = lambda key: TEXT["en"][key]
+        self.translate = lambda key: tr("en", "ui." + key)
 
     def source_index(self, number):
         if number is None or number < 1 or number > self.line_count:
