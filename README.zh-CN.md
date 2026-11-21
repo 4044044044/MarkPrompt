@@ -4,9 +4,15 @@
 
 🌐 [English](README.md) | **简体中文**
 
-![Version](https://img.shields.io/badge/Version-2026.11.01--i18n1-pink)
+[![Latest release](https://img.shields.io/badge/Latest%20release-2026.11.01--publish1-pink)](https://github.com/4044044044/MarkPrompt/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Author](https://img.shields.io/badge/Author-4044044044-lightpink)](https://github.com/4044044044)
+
+**[📦 下载 Windows 免安装版](https://github.com/4044044044/MarkPrompt/releases/latest)**
+
+🎬 搜到 TODO，只把第 7 行的命中改成 DONE，再保存。
+
+![搜索、修改单行命中并保存，搜索模式保持不变](docs/images/search-edit.gif)
 
 [✨ 特性](#features) · [📦 安装](#start) · [🚀 开始](#quickstart) · [📖 示例](#tutorials) · [📋 命令](#commands) · [🤖 CLI](#cli) · [🔨 打包](#build)
 
@@ -16,7 +22,7 @@
 
 ## ✨ 特性
 
-一个偏爱 DOS 时代的本地 Markdown 小工具。文字界面、命令提示符、键盘操作，图的就是那份复古的乐趣。读几篇文档、记几条想法，也能用 CLI 和 AI 折腾点新玩法。
+一个偏爱 DOS 时代的本地 Markdown 小工具。文字界面、命令提示符、键盘操作，图的就是那份复古的乐趣。读几篇文档、记几条想法，也可以用 CLI 读取笔记，或导出 JSON 快照供 AI 使用。
 
 - 📖 **拖进来就能读** — Markdown、文本、文件夹都可以。
 - ✍️ **用命令改笔记** — 连续追加、按行修改、替换、撤销与重做。
@@ -38,7 +44,7 @@
 
 ### 🪟 Windows 免安装版
 
-1. 从 Release 附件下载 `MarkPrompt-2026.11.01-i18n1-windows-x64.zip`。
+1. 打开[最新 Release](https://github.com/4044044044/MarkPrompt/releases/latest)，下载附件中以 `windows-x64.zip` 结尾的文件。
 2. 解压，双击 **`MarkPrompt.exe`**。
 3. 想在终端使用，就运行 **`MarkPromptCLI.exe`**。
 
@@ -152,10 +158,6 @@ Windows 也可以在安装依赖后双击 `markprompt.py`。安装和启动请�
 | `/delete` | 需先搜索 | 删除当前范围全部命中 |
 
 💾 保存、撤销和重做都会保留搜索状态。重新 `/search 关键词` 可恢复全文搜索；搜索中不能追加，先 `/end` 再 `/append`。每次文内搜索使用一个关键词。
-
-🎬 搜索 TODO，把第 7 行的命中改成 DONE，再保存。另一处命中仍然保留。
-
-![搜索、修改单行命中并保存，搜索模式保持不变](docs/images/search-edit.gif)
 
 ### 🖼️ 例子 4：放入本地图片
 

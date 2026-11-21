@@ -4,9 +4,15 @@
 
 🌐 **English** | [简体中文](README.zh-CN.md)
 
-![Version](https://img.shields.io/badge/Version-2026.11.01--i18n1-pink)
+[![Latest release](https://img.shields.io/badge/Latest%20release-2026.11.01--publish1-pink)](https://github.com/4044044044/MarkPrompt/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Author](https://img.shields.io/badge/Author-4044044044-lightpink)](https://github.com/4044044044)
+
+**[📦 Download for Windows (portable)](https://github.com/4044044044/MarkPrompt/releases/latest)**
+
+🎬 Find TODO, change only the match on line 7 to DONE, then save.
+
+![Search, edit one line, and save without leaving search mode](docs/images/search-edit.gif)
 
 [✨ Features](#features) · [📦 Install](#start) · [🚀 Start](#quickstart) · [📖 Examples](#tutorials) · [📋 Commands](#commands) · [🤖 CLI](#cli) · [🔨 Build](#build)
 
@@ -16,7 +22,7 @@
 
 ## ✨ Features
 
-A small local Markdown tool with a soft spot for DOS: a text-based interface, a command prompt, and plenty of keyboard controls. Read, jot down ideas, or let the CLI and AI join in.
+A small local Markdown tool with a soft spot for DOS: a text-based interface, a command prompt, and plenty of keyboard controls. Read and jot down ideas. Use the CLI to read notes or export JSON snapshots for AI.
 
 - 📖 **Drop and read** — open Markdown, text files, or folders.
 - ✍️ **Edit with commands** — append, edit lines, replace, undo, and redo.
@@ -38,7 +44,7 @@ Native Tkinter UI. `.md` files support command-based editing; `.txt` files are r
 
 ### 🪟 Windows portable edition
 
-1. Download `MarkPrompt-2026.11.01-i18n1-windows-x64.zip` from the release assets.
+1. On the [latest release page](https://github.com/4044044044/MarkPrompt/releases/latest), download the asset ending in `windows-x64.zip`.
 2. Extract it and double-click **`MarkPrompt.exe`**.
 3. For terminal use, run **`MarkPromptCLI.exe`**.
 
@@ -152,10 +158,6 @@ That line becomes `service_A calls service_B`; other lines are unchanged.
 | `/delete` | Search first | Delete all hits in scope |
 
 💾 Save, undo, and redo preserve search mode. Start `/search keyword` again to search the whole note. Leave search with `/end` before appending. Each in-note search takes one keyword.
-
-🎬 Find TODO, change the hit on line 7 to DONE, then save. The other hit stays in place.
-
-![Search, edit one line, and save without leaving search mode](docs/images/search-edit.gif)
 
 ### 🖼️ Example 4: Add a local image
 
